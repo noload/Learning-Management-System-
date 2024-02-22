@@ -70,4 +70,28 @@ const loginController = async (req, res) => {
   }
 };
 
-module.exports = { registerController, loginController };
+const currentUserController = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    if (!userId) {
+      res.status(404).json({
+        success: false,
+        message: "User id not found",
+      });
+    }
+
+    const user = await userModel.findById(userId);
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched current user details",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      success: false,
+      message: "Something went wrong in current user controller",
+    });
+  }
+};
+module.exports = { registerController, loginController, currentUserController };
