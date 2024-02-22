@@ -24,7 +24,14 @@ const registerController = async (req, res) => {
       message: "User Created Successfully",
       userId: user._id,
     });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "User not created",
+      error: error.message,
+    });
+  }
 };
 
 const loginController = async (req, res) => {

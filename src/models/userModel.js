@@ -4,10 +4,15 @@ const jwt = require("jsonwebtoken");
 const { JWT_KEY } = require("../config/serverConfig");
 
 const userSchema = new mongoose.Schema({
+  role: {
+    type: String,
+    enum: ["admin", "student"],
+    require: true,
+    default: "student",
+  },
   username: {
     type: String,
     require: true,
-    unique: true,
   },
   password: {
     type: String,
@@ -18,6 +23,15 @@ const userSchema = new mongoose.Schema({
     require: true,
     unique: true,
   },
+  enrolledCourses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "course",
+      require: () => {
+        return this.role === "student";
+      },
+    },
+  ],
 });
 
 userSchema.pre("save", async function () {
