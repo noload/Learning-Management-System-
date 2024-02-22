@@ -27,4 +27,47 @@ const registerController = async (req, res) => {
   } catch (error) {}
 };
 
-module.exports = { registerController };
+const loginController = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(404).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      res.status(404).json({
+        success: false,
+        message: "User Not Found",
+      });
+    }
+
+    const passwordCheck = await user.comparePassword(password);
+    if (!passwordCheck) {
+      res.status(404).json({
+        success: false,
+        message: "Invalid crediantial",
+      });
+    }
+
+    const token = await user.createJWT();
+    res.status(200).json({
+      success: false,
+      message: "User logged successfully",
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong in login controller",
+    });
+  }
+};
+
+module.exports = { registerController, loginController };
